@@ -41,10 +41,10 @@ function apiRoutes(app,db) {
       let filterArray       = [];
     
       if(issuetitle != undefined){
-        filterArray.push(issuetitle)
+        filterArray.push([issuetitle,'issue_title'])
       }
       if(id != undefined){
-          filterArray.push([id],"_id")
+          filterArray.push([id,"_id"])
       }
       if(createdby != undefined){
         filterArray.push([createdby,"created_by"])
@@ -78,6 +78,9 @@ function apiRoutes(app,db) {
                  if(k==f[1]){
                    if(d[k]==f[0]){
                      ++counter
+                   }
+                   else{
+                    counter = 0
                    }
                  }
                }
