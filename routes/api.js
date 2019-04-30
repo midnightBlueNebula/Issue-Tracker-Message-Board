@@ -84,6 +84,7 @@ function apiRoutes(app,db) {
              })
              if(filterArray.length==counter){
                resArray.push(d)
+               counter=0
              }
            })
            res.send(resArray)
