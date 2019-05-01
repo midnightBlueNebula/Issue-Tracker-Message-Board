@@ -80,14 +80,21 @@ function apiRoutes(app,db) {
                      ++counter
                    }
                    else{
-                     counter=0
+                   
+
+                    counter = 0
+
                    }
                  }
                }
              })
              if(filterArray.length==counter){
                resArray.push(d)
-               counter=0;
+
+               
+
+               counter=0
+
              }
            })
            res.send(resArray)
