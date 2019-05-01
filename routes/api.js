@@ -41,10 +41,10 @@ function apiRoutes(app,db) {
       let filterArray       = [];
     
       if(issuetitle != undefined){
-        filterArray.push(issuetitle)
+        filterArray.push([issuetitle,'issue_title'])
       }
       if(id != undefined){
-          filterArray.push([id],"_id")
+          filterArray.push([id,"_id"])
       }
       if(createdby != undefined){
         filterArray.push([createdby,"created_by"])
@@ -79,11 +79,15 @@ function apiRoutes(app,db) {
                    if(d[k]==f[0]){
                      ++counter
                    }
+                   else{
+                     counter=0
+                   }
                  }
                }
              })
              if(filterArray.length==counter){
                resArray.push(d)
+               counter=0;
              }
            })
            res.send(resArray)
@@ -142,37 +146,42 @@ function apiRoutes(app,db) {
         if(err){
           res.send('Error at PUT route, findOne');
         }
+        else if(!result.open){
+          res.send('This issue already closed')
+        }
         else if(result){
           if(title == '' && text == '' && creator == '' && assignedTo == '' && statusText == ''){
             res.send('no updated field sent');
           }
-          db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{open:openStatus, updated_on:new Date()}})
-          if(title != ''){
-            db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{issue_title:title}})
-          }
-          if(text != ''){
-            db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{issue_text:text}})
-          }
-          if(creator != ''){
-            db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{created_by:creator}})
-          }
-          if(assignedTo != ''){
-            db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{assigned_to:assignedTo}})
-          }
-          if(statusText != ''){
-            db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{status_text:statusText}})
-          }
-          db.collection('issues').findOne({_id:ObjectId(id)},(err2,updatedResult)=>{
-            if(err2){
-              res.send('Error after update on issue at findOne');
+          else{
+            db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{open:openStatus, updated_on:new Date()}})
+            if(title != ''){
+              db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{issue_title:title}})
             }
-            else if(updatedResult){
-              res.send(updatedResult)
+            if(text != ''){
+              db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{issue_text:text}})
             }
-            else{
-              res.send('Just updated this object and can\'t find already :(')
+            if(creator != ''){
+              db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{created_by:creator}})
             }
-          })
+            if(assignedTo != ''){
+              db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{assigned_to:assignedTo}})
+            }
+            if(statusText != ''){
+              db.collection('issues').findOneAndUpdate({_id:ObjectId(id)},{$set:{status_text:statusText}})
+            }
+            db.collection('issues').findOne({_id:ObjectId(id)},(err2,updatedResult)=>{
+              if(err2){
+                res.send('Error after update on issue at findOne');
+              }
+              else if(updatedResult){
+                res.send(updatedResult)
+              }
+              else{
+                res.send('Just updated this object and can\'t find already :(')
+              }
+            })
+          }
         }
         else{
           res.send('Search error: No issue assigned to this id');
